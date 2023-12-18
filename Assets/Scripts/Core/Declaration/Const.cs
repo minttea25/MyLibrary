@@ -23,13 +23,19 @@ namespace Core
         public const string AddressableEventSystemKey = "EventSystems";
         public const string EventSystemsName = "@EventSystems";
 
+        // Field Names for Relfections. DO NOT CHANGE THESE VALUES!
+        #region Field Names
         public const string BindObjectFieldName = "BindObject";
         public const string BindObjectTypeFieldName = "BindObjectType";
         public const string UIContextFieldName = "Context";
+        public const string UIContextFieldName2 = "context";
+
+        public const string DBInfoFieldName = "DBInfo";
 
         public const string ContentObjectTag = "UIContent";
         public const string ContentObjectName = "Content";
         public const string ContentObjectFieldName = "ContentObject";
+        #endregion
 
 
         readonly static public int DefaultAudioSourceCount = Enum.GetValues(typeof(AudioType)).Length;

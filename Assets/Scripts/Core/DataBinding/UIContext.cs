@@ -20,19 +20,16 @@ namespace Core
             componentTypeMap = new() 
             {
                 { typeof(TextMeshProUGUI), ObjectType.TextMeshProUGUI },
-                { typeof(Button), ObjectType.Button },
                 { typeof(Slider), ObjectType.Slider },
                 { typeof(Image), ObjectType.Image },
-                { typeof(HorizontalLayoutGroup), ObjectType.HorizontalLayoutGroup},
-                { typeof(VerticalLayoutGroup), ObjectType.VerticalLayoutGroup},
+                { typeof(RawImage), ObjectType.RawImage },
                 { typeof(Toggle), ObjectType.Toggle},
-                { typeof(GridLayoutGroup), ObjectType.GridlayoutGroup}
             };
         }
 
         public ObjectType GetObjectType(GameObject go)
         {
-            ObjectType type = ObjectType.Common;
+            ObjectType type = ObjectType.None;
 
             foreach (var component in go.GetComponents<Component>())
             {
