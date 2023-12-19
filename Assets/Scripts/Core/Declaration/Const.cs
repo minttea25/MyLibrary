@@ -9,7 +9,7 @@ namespace Core
     {
         public const int INVALID = -1;
 
-        public const int DefaultPoolObjectCount = 3;
+        public const int ContentObjectSearchDepthLevel = 2;
 
         #region For DontDestoyedOnLoad Object Names
 
@@ -23,13 +23,22 @@ namespace Core
         public const string AddressableEventSystemKey = "EventSystems";
         public const string EventSystemsName = "@EventSystems";
 
+        // Field Names for Relfections. DO NOT CHANGE THESE VALUES!
+        #region Field Names
         public const string BindObjectFieldName = "BindObject";
         public const string BindObjectTypeFieldName = "BindObjectType";
         public const string UIContextFieldName = "Context";
+        public const string UIContextFieldName2 = "context";
+
+        public const string DBInfoFieldName = "DBInfo";
 
         public const string ContentObjectTag = "UIContent";
         public const string ContentObjectName = "Content";
         public const string ContentObjectFieldName = "ContentObject";
+
+        public const string DBInfo_AllFound_FieldName = "AllFound";
+        public const string DBInfo_NotFoundObects_FieldName = "NotFoundObjects";
+        #endregion
 
 
         readonly static public int DefaultAudioSourceCount = Enum.GetValues(typeof(AudioType)).Length;

@@ -6,11 +6,19 @@ namespace Core
 {
     public abstract class BaseUIItem : BaseUI
     {
+        /// <summary>
+        /// Need to check null
+        /// </summary>
+        protected UIEventHandlerDynamic dynamicHandler = null;
+
         public override void Init()
         {
             base.Init();
+        }
 
-            _ = gameObject.GetOrAddComponent<UIEventHandlerDynamic>();
+        public void UseDynamicUIEventHandler()
+        {
+            dynamicHandler = gameObject.GetOrAddComponent<UIEventHandlerDynamic>();
         }
 
         public void RemoveDynamicEventHandler()

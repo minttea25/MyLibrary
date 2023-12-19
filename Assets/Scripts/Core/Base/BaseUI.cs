@@ -10,7 +10,7 @@ using UObject = UnityEngine.Object;
 
 namespace Core
 {
-    public abstract class BaseUI : MonoBehaviour
+    public abstract partial class BaseUI : MonoBehaviour
     {
         readonly Dictionary<Type, UObject[]> _objects = new();
         protected bool _init = false;
@@ -30,63 +30,6 @@ namespace Core
         {
             Init();
         }
-
-        #region Data-bind
-
-#if UNITY_EDITOR
-        public void AutoAssignUIs()
-        {
-            FindUI(transform, GetContextFieldsNames());
-            CheckBindUI();
-        }
-
-        void FindUI(Transform parent, List<string> names)
-        {
-            foreach(Transform tf in parent)
-            {
-                if (names.Contains(tf.name))
-                {
-                    // NOTE: Context.GetType().GetField() is not null.
-                    var property = GetContextFieldValue(tf.name);
-
-                    if (property != null)
-                    {
-                        var type = property.GetType(); // Property<>
-
-                        var bindObject = type.GetField(Const.BindObjectFieldName);
-                        bindObject?.SetValue(property, tf.gameObject);
-
-                        var bindObjectType = type.GetField(Const.BindObjectTypeFieldName);
-                        // If CUSTOM type, it does not search the type.
-                        if ((ObjectType)bindObjectType.GetValue(property) == ObjectType.CUSTOM) continue;
-                        else bindObjectType?.SetValue(property, UIComponentMapper.GetObjectType(tf.gameObject));
-                    }
-                }
-
-                // recursive call for search all childs
-                if (tf.childCount != 0) FindUI(tf, names);
-            }
-        }
-
-        void CheckBindUI()
-        {
-            var list = GetContextFieldsNames();
-            foreach(var name in list)
-            {
-                GameObject o = GetContextFieldValue(name).GetType().GetField(Const.BindObjectFieldName).GetValue(GetContextFieldValue(name)) as GameObject;
-                if (o == null)
-                {
-                    Debug.LogWarning($"Can not find UI Object name={name}. Check the name in hierarchy again.", o);
-                }
-            }
-        }
-
-        protected abstract List<string> GetContextFieldsNames();
-        protected abstract object GetContextFieldValue(string fieldName);
-
-#endif
-
-        #endregion
 
         #region Bind Functions
 
@@ -243,36 +186,4 @@ namespace Core
         #endregion
     }
 
-#if UNITY_EDITOR
-    [CustomEditor(typeof(BaseUI), true)]
-    public class BaseUIEditor : Editor
-    {
-        protected SerializedProperty context;
-
-        private void OnEnable()
-        {
-            context = serializedObject.FindProperty(Const.UIContextFieldName);
-        }
-
-        public override void OnInspectorGUI()
-        {
-            serializedObject.Update();
-
-            if (context != null)
-            {
-                EditorGUILayout.PropertyField(context, true);
-
-                EditorGUILayout.Space(10);
-
-                if (GUILayout.Button("Auto - Find&Assign UI Object"))
-                {
-                    (target as BaseUI).AutoAssignUIs();
-                    EditorUtility.SetDirty(target);
-                }
-            }
-            
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-#endif
 }
