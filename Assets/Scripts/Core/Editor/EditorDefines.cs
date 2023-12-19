@@ -1,3 +1,4 @@
+using Core;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,18 +16,24 @@ public class EditorDefines
 
     #endregion
 
-    #region BaseUIEditor
-    public readonly static string FindAndAssignText = "Find And Assign UI Objects";
+    #region BaseUIEditor & Popup
+    public const int RightAlignButtonWidth = 150;
 
+
+    public const string FindAndAssignText = "Find UI Objects";
+    public const string PushTheButtonText = "Push The Find Button.";
+
+    public const string FindContentObjectText = "Find Content Object";
+    public const string ContentPropertyNotFoundText = "The content property is not found.";
 
     #endregion
 
 
 
-    public readonly static string NotFoundObjectsHeader = "Not Found Objects (UIObject Names)";
-    public readonly static string DBRefInfoTitle_NotYet = "Push The Assign Button";
-    public readonly static string DBRefInfoTitle_AllFound = "All objects are found.";
-    public readonly static string DBRefInfoTitle_NotFound = "Some objects are not found.";
-    public readonly static string DBRefInfoTitle_NeedCheck = "Properties have been added or changed";
+    public const string NotFoundObjectsHeader = "Not Found Objects (UIObject Names)";
+    public const string DBRefInfoTitle_NotYet = "Push The Assign Button";
+    public const string DBRefInfoTitle_AllFound = "All objects are found.";
+    public const string DBRefInfoTitle_NotFound = "Some objects are not found.";
+    public const string DBRefInfoTitle_NeedCheck = "Properties may have been changed";
 
 }

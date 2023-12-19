@@ -10,7 +10,10 @@ namespace Core
     [Serializable]
     public class DBInfo
     {
+        public bool IsNew = true;
+        public bool AllFound = false;
         public List<string> NotFoundObjects = new List<string>();
+
     }
 
     public abstract partial class BaseUI : MonoBehaviour
@@ -73,6 +76,22 @@ namespace Core
             }
 
             return notFounds;
+        }
+
+        public bool CheckAll()
+        {
+            var list = GetContextFieldsNames();
+            foreach (var name in list)
+            {
+                var fieldValue = GetContextFieldValue(name);
+                GameObject o = fieldValue.GetType().GetField(Const.BindObjectFieldName).GetValue(fieldValue) as GameObject;
+
+                if (o == null)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public abstract Type GetContextType();

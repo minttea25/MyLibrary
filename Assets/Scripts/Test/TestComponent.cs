@@ -17,6 +17,7 @@ public struct TestData
 class TestComponentContext : UIContext
 {
     public UIObject<TextMeshProUGUI> IdText = new();
+    public UIObject<TextMeshProUGUI> IdText2 = new();
 }
 
 public class TestComponent : BaseUI, IDBCustomComponent<TestData>
@@ -28,6 +29,7 @@ public class TestComponent : BaseUI, IDBCustomComponent<TestData>
     public void UpdateUI(TestData data)
     {
         Context.IdText.Component.text = $"{data}";
+        Context.IdText2.Component.text = $"{data}";
         Debug.Log("Updated UI in TestComponent");
 
     }

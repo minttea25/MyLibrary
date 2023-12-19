@@ -1,22 +1,21 @@
 using Core;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(BaseUI), true)]
 public class BaseUIEditor : Editor
 {
-    //bool isChanged;
     protected SerializedProperty context;
     protected SerializedProperty refInfoDrawer;
 
     protected BaseUI ui = null;
 
-    private void OnEnable()
+    protected void CheckProperties()
     {
         ui = target as BaseUI;
 
-
-        //isChanged = true;
         refInfoDrawer = serializedObject.FindProperty(Const.DBInfoFieldName);
         if (refInfoDrawer == null)
         {
@@ -31,18 +30,34 @@ public class BaseUIEditor : Editor
         }
     }
 
-    public override void OnInspectorGUI()
+    protected void ShowBaseInspector()
     {
-        serializedObject.Update();
+        if (ui == null) return;
 
-        EditorGUILayout.PropertyField(refInfoDrawer);
+        if (ui.DBInfo.IsNew == true)
+        {
+            // It would be shown only before clicking the button.
+            var style = new GUIStyle()
+            {
+                fontStyle = FontStyle.Italic | FontStyle.Bold,
+            };
+            style.normal.textColor = EditorDefines.WarningColor;
+            EditorGUILayout.LabelField(EditorDefines.PushTheButtonText, style);
+        }
+        else
+        {
+            // check new uiobjects
+            ui.DBInfo.AllFound = ui.CheckAll();
+
+            EditorGUILayout.PropertyField(refInfoDrawer);
+        }
+
         EditorGUILayout.Separator();
-
 
         if (context != null)
         {
             // section 1 : UIContext Property Name Label, Assign Button
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal(EditorStyles.helpBox);
             var style = new GUIStyle()
             {
                 fontStyle = FontStyle.Bold,
@@ -51,7 +66,7 @@ public class BaseUIEditor : Editor
             style.normal.textColor = Color.white;
             GUILayout.Label(ui.GetContextType().Name, style);
             GUILayout.FlexibleSpace();
-            if (GUILayout.Button(EditorDefines.FindAndAssignText, GUILayout.Width(200)))
+            if (GUILayout.Button(EditorDefines.FindAndAssignText, GUILayout.Width(EditorDefines.RightAlignButtonWidth)))
             {
                 ButtonOnClicked();
             }
@@ -61,7 +76,7 @@ public class BaseUIEditor : Editor
             EditorGUILayout.PropertyField(context, true);
 
             // space
-            EditorGUILayout.Space(10);
+            EditorGUILayout.Separator();
 
             // section 3 : Assign Button
             if (GUILayout.Button(EditorDefines.FindAndAssignText))
@@ -69,24 +84,39 @@ public class BaseUIEditor : Editor
                 ButtonOnClicked();
             }
         }
+    }
+
+
+    private void OnEnable()
+    {
+        CheckProperties();
+    }
+
+    public override void OnInspectorGUI()
+    {
+        serializedObject.Update();
+
+        ShowBaseInspector();
 
         serializedObject.ApplyModifiedProperties();
     }
 
-    //private void OnValidate()
-    //{
-    //    Debug.Log("OnValidate");
-    //    isChanged = true;
-    //}
 
     void ButtonOnClicked()
     {
+        // update the not found object list
+
         ui.DBInfo.NotFoundObjects.Clear();
-        var notFounds = ui.AutoAssignUIs();
-        if (notFounds.Count != 0)
-        {
-            foreach (var name in notFounds) ui.DBInfo.NotFoundObjects.Add(name);
-        }
+        List<string> notFounds = ui.AutoAssignUIs();
+
+        // update the list of DBInfo.NotFoundObjects
+        foreach (var name in notFounds) ui.DBInfo.NotFoundObjects.Add(name);
+
+        // set IsNew false: hide the 'push button' label
+        ui.DBInfo.IsNew = false;
+
+
+        // notify
         EditorUtility.SetDirty(target);
     }
 }
@@ -102,35 +132,37 @@ public class DBInfoDrawer : PropertyDrawer
     bool foldout;
 
 
+
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
     {
         _ = EditorGUI.BeginProperty(position, label, property);
-        SerializedProperty notFoundObjects = property.FindPropertyRelative("NotFoundObjects");
+        SerializedProperty notFoundObjects = property.FindPropertyRelative(Const.DBInfo_NotFoundObects_FieldName);
+        SerializedProperty allFound = property.FindPropertyRelative(Const.DBInfo_AllFound_FieldName);
 
-        // TODO : 아직 버튼 안눌렀을 때 메시지 표시 및 처리
-
-        if (notFoundObjects.arraySize != 0)
+        if (allFound.boolValue == false)
         {
             titleTextStyle.normal.textColor = EditorDefines.WarningColor;
             EditorGUI.LabelField(position, EditorDefines.DBRefInfoTitle_NotFound, titleTextStyle);
             position.y += EditorGUIUtility.singleLineHeight;
 
-            foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, EditorDefines.NotFoundObjectsHeader);
-            if (foldout)
+            if (notFoundObjects.arraySize != 0)
             {
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                for (int i = 0; i < notFoundObjects.arraySize; i++)
+                foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, EditorDefines.NotFoundObjectsHeader);
+                if (foldout)
                 {
-                    EditorGUILayout.LabelField(notFoundObjects.GetArrayElementAtIndex(i).stringValue);
-                }
-                EditorGUILayout.EndVertical();
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    for (int i = 0; i < notFoundObjects.arraySize; i++)
+                    {
+                        EditorGUILayout.LabelField(notFoundObjects.GetArrayElementAtIndex(i).stringValue);
+                    }
+                    EditorGUILayout.EndVertical();
 
+                }
+                EditorGUILayout.EndFoldoutHeaderGroup();
             }
-            EditorGUILayout.EndFoldoutHeaderGroup();
         }
         else
         {
-            
             titleTextStyle.normal.textColor = EditorDefines.OkColor;
             EditorGUI.LabelField(position, EditorDefines.DBRefInfoTitle_AllFound, titleTextStyle);
             position.y += EditorGUIUtility.singleLineHeight;
