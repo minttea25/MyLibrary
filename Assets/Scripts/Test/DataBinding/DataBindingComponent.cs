@@ -13,6 +13,7 @@ public struct TestData
     }
 }
 
+
 [Serializable]
 class TestComponentContext : UIContext
 {
@@ -20,7 +21,7 @@ class TestComponentContext : UIContext
     public UIObject<TextMeshProUGUI> IdText2 = new();
 }
 
-public class TestComponent : BaseUI, IDBCustomComponent<TestData>
+public class DataBindingComponent : BaseUI, IDBCustomComponent<TestData>
 {
     [SerializeField]
     TestComponentContext Context = new();

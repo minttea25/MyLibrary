@@ -9,9 +9,9 @@ namespace Core
 {
     public class SceneManagerCore : IManager
     {
-        public SceneType _currentSceneType = SceneType.INVALID;
+        public SceneTypes _currentSceneType = SceneTypes.INVALID;
 
-        public SceneType CurrentSceneType
+        public SceneTypes CurrentSceneType
         {
             private set
             {
@@ -25,7 +25,7 @@ namespace Core
 
         public static BaseScene CurrentScene { get { return GameObject.FindObjectOfType<BaseScene>(); } }
 
-        public void LoadScene(SceneType sceneType)
+        public void LoadScene(SceneTypes sceneType)
         {
             CurrentScene.Clear();
 
@@ -33,7 +33,7 @@ namespace Core
             SceneManager.LoadScene(GetSceneName(sceneType));
         }
 
-        public void LoadScene(SceneType sceneType, LoadSceneMode mode)
+        public void LoadScene(SceneTypes sceneType, LoadSceneMode mode)
         {
             CurrentScene.Clear();
 
@@ -41,9 +41,9 @@ namespace Core
             SceneManager.LoadScene(GetSceneName(sceneType), mode);
         }
 
-        public virtual string GetSceneName(SceneType sceneType)
+        public virtual string GetSceneName(SceneTypes sceneType)
         {
-            return Enum.GetName(typeof(SceneType), sceneType);
+            return Enum.GetName(typeof(SceneTypes), sceneType);
         }
 
         public void AddSceneChangeAction(UnityAction<Scene, LoadSceneMode> action)
@@ -57,7 +57,7 @@ namespace Core
             SceneManager.sceneLoaded -= action;
         }
 
-        public void UnloadSceneAsync(SceneType sceneType, UnloadSceneOptions options = UnloadSceneOptions.None)
+        public void UnloadSceneAsync(SceneTypes sceneType, UnloadSceneOptions options = UnloadSceneOptions.None)
         {
             SceneManager.UnloadSceneAsync(GetSceneName(sceneType), options);
         }

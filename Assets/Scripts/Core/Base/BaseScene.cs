@@ -5,7 +5,7 @@ namespace Core
 {
     public abstract class BaseScene : MonoBehaviour
     {
-        public SceneType Type { get; protected set; } = SceneType.INVALID;
+        public SceneTypes SceneType { get; protected set; } = SceneTypes.INVALID;
         protected bool _init = false;
 
 

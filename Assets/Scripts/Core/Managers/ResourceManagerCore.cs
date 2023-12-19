@@ -163,11 +163,16 @@ namespace Core
         }
 
         /// <summary>
-        /// Use this function to load an image for Sprite or Texture. (Sprite.texture)
+        /// Use this function to load an image for Sprite.
         /// </summary>
         /// <param name="key">Addressable key</param>
         /// <param name="callback">callback function called loaded</param>
         public void LoadImageAsync(string key, Action<Sprite> callback = null)
+        {
+            LoadAsync(key, callback);
+        }
+
+        public void LoadTexture2DAsync(string key, Action<Texture2D> callback = null)
         {
             LoadAsync(key, callback);
         }
