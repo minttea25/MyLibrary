@@ -24,6 +24,7 @@ namespace Core
         [SerializeField]
         public DBInfo DBInfo = new();
 
+
         public List<string> AutoAssignUIs()
         {
             FindUI(transform, GetContextFieldsNames());

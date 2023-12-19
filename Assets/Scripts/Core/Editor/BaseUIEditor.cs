@@ -3,21 +3,24 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [CustomEditor(typeof(BaseUI), true)]
 public class BaseUIEditor : Editor
 {
     protected SerializedProperty context;
-    protected SerializedProperty refInfoDrawer;
+    protected SerializedProperty dbRefInfo;
 
     protected BaseUI ui = null;
+
+    bool foldout;
 
     protected void CheckProperties()
     {
         ui = target as BaseUI;
 
-        refInfoDrawer = serializedObject.FindProperty(Const.DBInfoFieldName);
-        if (refInfoDrawer == null)
+        dbRefInfo = serializedObject.FindProperty(Const.DBInfoFieldName);
+        if (dbRefInfo == null)
         {
             Debug.LogError($"Can not find DBInfo property in BaseUI. [name = {Const.DBInfoFieldName}]");
         }
@@ -27,6 +30,41 @@ public class BaseUIEditor : Editor
         if (context == null)
         {
             Debug.LogWarning($"Can not find UIContext property in BaseUI. [name = {Const.UIContextFieldName} | {Const.UIContextFieldName2}");
+        }
+    }
+
+    protected void ShowDBInfo()
+    {
+        GUIStyle titleTextStyle = new GUIStyle()
+        {
+            fontStyle = FontStyle.Bold,
+            fontSize = EditorDefines.InfoFontSize,
+        };
+
+        if (ui.DBInfo.AllFound == false)
+        {
+            titleTextStyle.normal.textColor = EditorDefines.WarningColor;
+            EditorGUILayout.LabelField(EditorDefines.DBRefInfoTitle_NotFound, titleTextStyle);
+
+            if (ui.DBInfo.NotFoundObjects.Count != 0)
+            {
+                foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, EditorDefines.NotFoundObjectsHeader);
+                if (foldout)
+                {
+                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                    foreach(var name in ui.DBInfo.NotFoundObjects)
+                    {
+                        EditorGUILayout.LabelField(name);
+                    }
+                    EditorGUILayout.EndVertical();
+                }
+                EditorGUILayout.EndFoldoutHeaderGroup();
+            }
+        }
+        else
+        {
+            titleTextStyle.normal.textColor = EditorDefines.OkColor;
+            EditorGUILayout.LabelField( EditorDefines.DBRefInfoTitle_AllFound, titleTextStyle);
         }
     }
 
@@ -49,10 +87,11 @@ public class BaseUIEditor : Editor
             // check new uiobjects
             ui.DBInfo.AllFound = ui.CheckAll();
 
-            EditorGUILayout.PropertyField(refInfoDrawer);
+            //EditorGUILayout.PropertyField(refInfoDrawer);
+            ShowDBInfo();
         }
 
-        EditorGUILayout.Separator();
+        EditorGUILayout.Space(EditorDefines.SpacePreference);
 
         if (context != null)
         {
@@ -118,58 +157,5 @@ public class BaseUIEditor : Editor
 
         // notify
         EditorUtility.SetDirty(target);
-    }
-}
-
-[CustomPropertyDrawer(typeof(DBInfo))]
-public class DBInfoDrawer : PropertyDrawer
-{
-    readonly GUIStyle titleTextStyle = new GUIStyle()
-    {
-        fontStyle = FontStyle.Bold,
-        fontSize = EditorDefines.InfoFontSize,
-    };
-    bool foldout;
-
-
-
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-    {
-        _ = EditorGUI.BeginProperty(position, label, property);
-        SerializedProperty notFoundObjects = property.FindPropertyRelative(Const.DBInfo_NotFoundObects_FieldName);
-        SerializedProperty allFound = property.FindPropertyRelative(Const.DBInfo_AllFound_FieldName);
-
-        if (allFound.boolValue == false)
-        {
-            titleTextStyle.normal.textColor = EditorDefines.WarningColor;
-            EditorGUI.LabelField(position, EditorDefines.DBRefInfoTitle_NotFound, titleTextStyle);
-            position.y += EditorGUIUtility.singleLineHeight;
-
-            if (notFoundObjects.arraySize != 0)
-            {
-                foldout = EditorGUILayout.BeginFoldoutHeaderGroup(foldout, EditorDefines.NotFoundObjectsHeader);
-                if (foldout)
-                {
-                    EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                    for (int i = 0; i < notFoundObjects.arraySize; i++)
-                    {
-                        EditorGUILayout.LabelField(notFoundObjects.GetArrayElementAtIndex(i).stringValue);
-                    }
-                    EditorGUILayout.EndVertical();
-
-                }
-                EditorGUILayout.EndFoldoutHeaderGroup();
-            }
-        }
-        else
-        {
-            titleTextStyle.normal.textColor = EditorDefines.OkColor;
-            EditorGUI.LabelField(position, EditorDefines.DBRefInfoTitle_AllFound, titleTextStyle);
-            position.y += EditorGUIUtility.singleLineHeight;
-        }
-
-        EditorGUILayout.Space(EditorDefines.SpacePreference);
-
-        EditorGUI.EndProperty();
     }
 }

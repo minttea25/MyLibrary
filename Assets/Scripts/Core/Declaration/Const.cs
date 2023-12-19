@@ -36,8 +36,6 @@ namespace Core
         public const string ContentObjectName = "Content";
         public const string ContentObjectFieldName = "ContentObject";
 
-        public const string DBInfo_AllFound_FieldName = "AllFound";
-        public const string DBInfo_NotFoundObects_FieldName = "NotFoundObjects";
         #endregion
 
 
