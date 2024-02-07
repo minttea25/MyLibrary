@@ -10,7 +10,7 @@ namespace Core
 
     }
 
-    public enum SceneType : int
+    public enum SceneTypes : int
     {
         INVALID = -1,
         

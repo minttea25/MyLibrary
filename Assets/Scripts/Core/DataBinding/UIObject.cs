@@ -1,15 +1,24 @@
 using System;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
 
 namespace Core
 {
     public interface IDBCustomComponent<T>
     {
         public void UpdateUI(T data);
+    }
+
+    [Serializable]
+    public class UIObject
+    {
+        /// <summary>
+        /// DO NOT CHANGE THE NAME; It is relevant  from the System.Reflection. See: Const.BindObjectFieldName.
+        /// </summary>
+        public GameObject BindObject = null;
+        /// <summary>
+        /// DO NOT CHANGE THE NAME; It is relevant  from the System.Reflection. See: Const.BindObjectFieldName.
+        /// </summary>
+        public ObjectType BindObjectType;
     }
 
     [Serializable]

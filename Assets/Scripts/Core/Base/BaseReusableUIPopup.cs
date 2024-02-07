@@ -6,14 +6,26 @@ namespace Core
 {
     public abstract class BaseReusableUIPopup : BaseUIPopup
     {
-        public virtual void OpenPopup()
+        /// <summary>
+        /// Set gameObject active(true) and show the ContentObject
+        /// </summary>
+        public sealed override void Show()
         {
+            if (VisibleState == VisibleStates.Appearing || VisibleState == VisibleStates.Appeared) return;
+
             gameObject.SetActive(true);
-            Show();
+
+            VisibleState = VisibleStates.Appearing;
+            DOTweenAnimations.ShowUI(ContentObject, callback: () =>
+            {
+                VisibleState = VisibleStates.Appeared;
+            });
         }
 
-        public virtual void ClosePopup()
+        public sealed override void Hide()
         {
+            if (VisibleState == VisibleStates.Disappearing || VisibleState == VisibleStates.Disappeared) return;
+
             VisibleState = VisibleStates.Disappearing;
             DOTweenAnimations.HideUI(ContentObject, callback: () =>
             {

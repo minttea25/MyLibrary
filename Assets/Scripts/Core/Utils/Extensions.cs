@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
@@ -38,7 +36,7 @@ namespace Core
 
         public static void BindEventOnUI(this GameObject go, Action action, UIEvent type = UIEvent.Click)
         {
-            Utils.BindEventOnUI(go, action, type); 
+            Utils.BindEventOnUI(go, action, type);
         }
 
         public static void BindUnityActionOnUI(this GameObject go, UnityAction action, UIEvent type = UIEvent.Click)
@@ -53,7 +51,7 @@ namespace Core
 
         public static void DestroyAllItems(this Transform parent)
         {
-            ManagerCore.Resource.DestroyAllItems(parent);
+            Utils.DestroyAllItems(parent);
         }
     }
 }

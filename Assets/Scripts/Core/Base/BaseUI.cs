@@ -103,7 +103,7 @@ namespace Core
         public TMP_InputField GetInputField(int idx) { return Get<TMP_InputField>(idx); }
 
         /// <summary>
-        /// NOTE: The default DropDOwn type is considered TMP_DropDown. (UnityEngine.UI.DropDown is now legacy.)
+        /// NOTE: The default DropDown type is considered TMP_DropDown. (UnityEngine.UI.DropDown is now legacy.)
         /// </summary>
         /// <param name="idx"></param>
         /// <returns></returns>

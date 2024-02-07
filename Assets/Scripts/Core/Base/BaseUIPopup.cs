@@ -8,11 +8,11 @@ namespace Core
         [Tooltip("A panel to apply show/hide animation; It must not be a canvas.\nIf not assigned in Editor, it would find with a tag or name.")]
         public GameObject ContentObject; // Do not change the name.
 
-        VisibleStates _visibleState = VisibleStates.Disappeared;
+        VisibleStates m_visibleState = VisibleStates.Disappeared;
         public VisibleStates VisibleState
         {
-            get => _visibleState;
-            set => _visibleState = value;
+            get => m_visibleState;
+            set => m_visibleState = value;
         }
 
         public enum VisibleStates
@@ -33,7 +33,7 @@ namespace Core
             ContentObject.SetActive(false);
         }
 
-        public virtual void ClosePopupUI()
+        public void Close()
         {
             VisibleState = VisibleStates.Disappearing;
             DOTweenAnimations.HideUI(ContentObject, callback: () =>
@@ -45,6 +45,8 @@ namespace Core
 
         public virtual void Show()
         {
+            if (VisibleState == VisibleStates.Appearing || VisibleState == VisibleStates.Appeared) return;
+
             VisibleState = VisibleStates.Appearing;
             DOTweenAnimations.ShowUI(ContentObject, callback: () =>
             {
@@ -54,8 +56,10 @@ namespace Core
 
         public virtual void Hide()
         {
+            if (VisibleState == VisibleStates.Disappearing || VisibleState == VisibleStates.Disappeared) return;
+
             VisibleState = VisibleStates.Disappearing;
-            DOTweenAnimations.HideUI(gameObject, callback: () => 
+            DOTweenAnimations.HideUI(ContentObject, callback: () =>
             {
                 VisibleState = VisibleStates.Disappeared;
             });

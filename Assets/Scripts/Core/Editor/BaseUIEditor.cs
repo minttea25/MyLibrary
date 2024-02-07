@@ -1,9 +1,7 @@
 using Core;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 [CustomEditor(typeof(BaseUI), true)]
 public class BaseUIEditor : Editor
@@ -52,7 +50,7 @@ public class BaseUIEditor : Editor
                 if (foldout)
                 {
                     EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                    foreach(var name in ui.DBInfo.NotFoundObjects)
+                    foreach (var name in ui.DBInfo.NotFoundObjects)
                     {
                         EditorGUILayout.LabelField(name);
                     }
@@ -64,7 +62,7 @@ public class BaseUIEditor : Editor
         else
         {
             titleTextStyle.normal.textColor = EditorDefines.OkColor;
-            EditorGUILayout.LabelField( EditorDefines.DBRefInfoTitle_AllFound, titleTextStyle);
+            EditorGUILayout.LabelField(EditorDefines.DBRefInfoTitle_AllFound, titleTextStyle);
         }
     }
 

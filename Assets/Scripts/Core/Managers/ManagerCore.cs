@@ -13,10 +13,7 @@ namespace Core
     public class ManagerCore : MonoBehaviour
     {
         static ManagerCore _instance;
-        static ManagerCore Instance
-        {
-            get => _instance;
-        }
+        public static ManagerCore Instance => _instance; // for using coroutine
 
         readonly static ResourceManagerCore _resource = new();
         readonly static UIManagerCore _ui = new();
@@ -34,10 +31,23 @@ namespace Core
 
         readonly static List<IManager> _managers = new()
         {
-            _resource, _ui, _scene, _sound, _data, // add customs...
+            _resource, _ui, _scene, _sound, _data, 
+            // add customs...
         };
 
-        // Game Contents
+        // Game Contents 
+        // add user codes ...
+
+        private void OnEnable()
+        {
+            // add codes for managers which are loaded before awake
+            // ex ) base resources, base settings ...
+        }
+
+        private void OnDisable()
+        {
+            // add codes to execute right before quitting application
+        }
 
         public Coroutine StartCoroutineEx(IEnumerator coroutine)
         {

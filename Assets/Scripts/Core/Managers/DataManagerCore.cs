@@ -1,49 +1,57 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
 using UnityEngine;
 
-
 namespace Core
 {
-    public interface IJsonLoader<Key, Value>
-    {
-        Dictionary<Key, Value> MakeDictionaryData();
-    }
-
     public class DataManagerCore : IManager
     {
+        Action LoadCompleted = null;
+        public void SetCompleted(Action completed)
+        {
+            LoadCompleted = completed;
+            if (DataCount == loadedData) completed.Invoke();
+        }
+        int loadedData = 0;
+
+
+        // edit user-preferences
+        public const int DataCount = 0;
+
         // add members to load
-        
+
+
         public bool Loaded()
         {
-
+            // add user codes ...
 
             return true;
         }
 
-        public void Init()
+        public void Load()
         {
-            
+            // load data with LoadJsonAsync/LoadXmlAsync
         }
 
         void LoadJsonAsync<T>(string key, Action<T> callback)
         {
             ManagerCore.Resource.LoadAsyncOnce<TextAsset>(key, (textAsset) =>
             {
-                T json = JsonUtility.FromJson<T>(textAsset.text);
+                T json = Newtonsoft.Json.JsonConvert.DeserializeObject<T>(textAsset.text);
+#if DEBUG
+                Debug.Log($"Loaded json data: {key}");
+#endif
                 callback?.Invoke(json);
-            });
-        }
 
-        void LoadJsonLoaderAsync<Loader, Key, Value>(string key, Action<Loader> callback) where Loader : IJsonLoader<Key, Value>
-        {
-            ManagerCore.Resource.LoadAsyncOnce<TextAsset>(key, (textAsset) =>
-            {
-                Loader loader = JsonUtility.FromJson<Loader>(textAsset.text);
-                callback?.Invoke(loader);
+                loadedData++;
+                if (loadedData == DataCount)
+                {
+#if DEBUG
+                    Debug.Log($"All data is loaded completely.");
+#endif
+                    LoadCompleted?.Invoke();
+                }
             });
         }
 
@@ -54,16 +62,15 @@ namespace Core
                 XmlSerializer xs = new(typeof(T));
                 MemoryStream stream = new(System.Text.Encoding.UTF8.GetBytes(textAsset.text));
                 callback?.Invoke((T)xs.Deserialize(stream));
-            });
-        }
 
-        void LoadXmlAsync<Loader, Key, Value>(string key, Action<Loader> callback) where Loader : IJsonLoader<Key, Value>, new()
-        {
-            ManagerCore.Resource.LoadAsyncOnce<TextAsset>(key, (textAsset) =>
-            {
-                XmlSerializer xs = new(typeof(Loader));
-                MemoryStream stream = new(System.Text.Encoding.UTF8.GetBytes(textAsset.text));
-                callback?.Invoke((Loader)xs.Deserialize(stream));
+                loadedData++;
+                if (loadedData == DataCount)
+                {
+#if DEBUG
+                    Debug.Log($"All data is loaded completely.");
+#endif
+                    LoadCompleted?.Invoke();
+                }
             });
         }
 
@@ -73,7 +80,7 @@ namespace Core
 
         void IManager.InitManager()
         {
-            Init();
+
         }
     }
 }

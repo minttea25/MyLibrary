@@ -11,7 +11,7 @@ namespace Core
         /// <summary>
         /// NOTE: The order of normal popup start at 10; You can open the normal popups up to 19.
         /// </summary>
-        const int TopPopupSortingLayer = 30;
+        const int TopPopupSortingLayer = 100;
 
         public BaseUIPopup TopPopupUI
         {
@@ -78,7 +78,7 @@ namespace Core
 
         public void ShowPopupUIAsync<T>(string key, bool alwaysShowOnTop = false, Action<T> callback = null) where T : BaseUIPopup
         {
-            ManagerCore.Resource.Instantiate(
+            ManagerCore.Resource.InstantiateAsync(
                 key,
                 null,
                 (result) =>
@@ -101,9 +101,37 @@ namespace Core
                 );
         }
 
+        public T ShowPopupUI<T>(string key, bool alwaysShowOnTop = false, string name = null) where T : BaseUIPopup
+        {
+            GameObject asset = ManagerCore.Resource.Get<GameObject>(key);
+
+            if (asset == null) return null;
+
+            GameObject go = UnityEngine.Object.Instantiate(asset, RootObject.transform);
+
+            go.name = name ?? asset.name;
+            go.transform.localPosition = asset.transform.position;
+
+            T popup = go.GetComponent<T>();
+            if (alwaysShowOnTop == true)
+            {
+                _onTopPopup = popup;
+                popup.gameObject.GetOrAddComponent<Canvas>().sortingOrder = TopPopupSortingLayer;
+            }
+            else
+            {
+                _popupStack.Push(popup);
+            }
+
+            popup.transform.SetParent(RootObject.transform);
+            popup.Show();
+
+            return popup;
+        }
+
         public void ShowSceneUIAsync<T>(string key, Action<T> callback = null) where T : BaseUIScene
         {
-            ManagerCore.Resource.Instantiate(
+            ManagerCore.Resource.InstantiateAsync(
                 key,
                 RootObject.transform,
                 (result) =>
@@ -115,9 +143,27 @@ namespace Core
                 );
         }
 
+        public T ShowSceneUI<T>(string key, string name = null) where T : BaseUIScene
+        {
+            GameObject asset = ManagerCore.Resource.Get<GameObject>(key);
+            if (asset == null) return null;
+
+            GameObject go = UnityEngine.Object.Instantiate(asset);
+
+            go.name = name ?? asset.name;
+            go.transform.localPosition = asset.transform.position;
+
+            T ui = go.GetOrAddComponent<T>();
+            _sceneUI = ui;
+            ui.transform.SetParent(RootObject.transform);
+
+            return ui;
+        }
+
+
         public void ShowUIAsync<T>(string key, int sortingOrder, Action<T> callback = null) where T : BaseUI
         {
-            ManagerCore.Resource.Instantiate(
+            ManagerCore.Resource.InstantiateAsync(
                 key,
                 RootObject.transform,
                 (result) =>
@@ -131,7 +177,7 @@ namespace Core
 
         public void AddItemUIAsync<T>(string key, Transform parent, Action<T> callback = null) where T : BaseUIItem
         {
-            ManagerCore.Resource.Instantiate(
+            ManagerCore.Resource.InstantiateAsync(
                 key,
                 parent,
                 (result) =>
@@ -140,6 +186,20 @@ namespace Core
                     callback?.Invoke(itemUI);
                 }
                 );
+        }
+
+        public T AddItemUI<T>(string key, Transform parent, string name = null) where T : BaseUIItem
+        {
+            GameObject asset = ManagerCore.Resource.Get<GameObject>(key);
+            if (asset == null) return null;
+
+            GameObject go = UnityEngine.Object.Instantiate(asset, parent);
+
+            go.name = name ?? asset.name;
+            go.transform.localPosition = asset.transform.position;
+
+            T item = go.GetComponent<T>();
+            return item;
         }
 
         public void CloseTopPopupUI()
@@ -158,6 +218,10 @@ namespace Core
 
         public void ClosePopupUI(BaseUIPopup popup)
         {
+            if (TopPopupUI != null && TopPopupUI.Equals(popup))
+            {
+                CloseTopPopupUI();
+            }
 
             if (_popupStack.Count == 0) return;
 
@@ -184,7 +248,7 @@ namespace Core
 
         public void CloseAllPopupUI()
         {
-            while(_popupStack.Count > 0)
+            while (_popupStack.Count > 0)
             {
                 ClosePopupUI();
             }
@@ -196,13 +260,13 @@ namespace Core
 
         void IManager.ClearManager()
         {
-            ClosePopupUI();
+            //ClosePopupUI();
 
             if (_sceneUI != null)
             {
                 ManagerCore.Resource.Destroy(_sceneUI.gameObject);
             }
-            
+
             _sceneUI = null;
         }
     }

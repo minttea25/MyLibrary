@@ -23,7 +23,7 @@ namespace Core
 
         public void RemoveDynamicEventHandler()
         {
-            Destroy(gameObject.GetComponent<UIEventHandlerDynamic>());
+            if (dynamicHandler != null) Destroy(dynamicHandler);
         }
     }
 }

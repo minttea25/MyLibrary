@@ -182,9 +182,17 @@ namespace Core
                     evt.OnClickHandler += action;
                     break;
                 case UIEvent.LongClick:
-                    evt.OnClickHandler -= action;
-                    evt.OnClickHandler += action;
+                    evt.OnLongClickHandler -= action;
+                    evt.OnLongClickHandler += action;
                     break;
+            }
+        }
+
+        public static void DestroyAllItems(Transform parent)
+        {
+            foreach (Transform item in parent)
+            {
+                GameObject.Destroy(item.gameObject);
             }
         }
     }
